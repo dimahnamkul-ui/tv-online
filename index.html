@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>Nonton TV</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b1120; --panel:#121c2e; --panel2:#18253a; --line:#283750; --text:#f3f6fc; --muted:#a7b4c8; --accent:#f5b942; --blue:#64a8ff; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:radial-gradient(ellipse at top right,#172944 0,transparent 38%),var(--bg); color:var(--text); font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    .wrap { width:min(1120px,100% - 32px); margin:0 auto; padding:28px 0 42px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:30px; }
+    .brand { display:flex; align-items:center; gap:12px; font-weight:750; letter-spacing:.2px; }
+    .logo { display:grid; place-items:center; width:42px; height:42px; border-radius:14px; background:var(--accent); color:#1a2230; font-size:22px; }
+    .tag { color:#d7e4f7; background:#19283e; border:1px solid var(--line); border-radius:999px; padding:7px 12px; font-size:12px; }
+    .intro { margin:0 0 20px; }
+    h1 { font-size:clamp(30px,5vw,48px); line-height:1.08; margin:0 0 10px; letter-spacing:-1.2px; }
+    .intro p,.muted { color:var(--muted); margin:0; }
+    .layout { display:grid; grid-template-columns:minmax(0,1.7fr) minmax(280px, .8fr); gap:20px; align-items:start; }
+    .card { background:rgba(18,28,46,.94); border:1px solid var(--line); border-radius:20px; overflow:hidden; box-shadow:0 18px 44px #0003; }
+    .player-head { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid var(--line); gap:12px; }
+    .onair { display:flex; align-items:center; gap:9px; font-weight:700; }
+    .dot { width:9px; height:9px; background:#63748b; border-radius:50%; }
+    .dot.live { background:#ff595e; box-shadow:0 0 0 5px #ff595e22; }
+    .player { aspect-ratio:16/9; min-height:220px; background:#05080e; display:grid; place-items:center; }
+    iframe { width:100%; height:100%; min-height:220px; border:0; background:#05080e; }
+    .empty { max-width:440px; padding:26px; text-align:center; color:var(--muted); }
+    .empty-icon { font-size:45px; margin-bottom:10px; }
+    .player-actions { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 18px; border-top:1px solid var(--line); }
+    .player-actions a { color:var(--blue); text-decoration:none; font-size:14px; }
+    .side { padding:18px; }
+    h2 { margin:0 0 14px; font-size:18px; }
+    label { display:block; margin:12px 0 6px; color:#d6dfed; font-size:13px; font-weight:650; }
+    input { width:100%; padding:11px 12px; background:#0d1524; color:var(--text); border:1px solid #354761; border-radius:10px; font:inherit; }
+    input:focus { outline:2px solid #64a8ff88; border-color:var(--blue); }
+    button { font:inherit; cursor:pointer; }
+    .primary { width:100%; margin-top:14px; padding:11px 14px; border:0; border-radius:10px; background:var(--accent); color:#1a2230; font-weight:800; }
+    .primary:hover { filter:brightness(1.07); }
+    .hint { margin:11px 0 0; color:var(--muted); font-size:12px; }
+    .section-title { display:flex; align-items:center; justify-content:space-between; margin:24px 0 11px; }
+    .section-title h2 { margin:0; }
+    .count { color:var(--muted); font-size:12px; }
+    .channels { display:grid; gap:8px; }
+    .channel { display:flex; align-items:center; gap:10px; padding:10px; background:#0d1524; border:1px solid var(--line); border-radius:12px; }
+    .channel-play { flex:1; min-width:0; display:flex; align-items:center; gap:10px; border:0; background:transparent; color:var(--text); text-align:left; padding:0; }
+    .channel-play:hover .channel-name { color:var(--accent); }
+    .channel-icon { display:grid; place-items:center; width:34px; height:34px; flex:none; border-radius:10px; background:#1b2c45; }
+    .channel-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:650; }
+    .channel-type { display:block; color:var(--muted); font-size:11px; font-weight:400; }
+    .remove { background:transparent; color:#aab7c9; border:0; font-size:18px; padding:4px 7px; }
+    .remove:hover { color:#ff777e; }
+    .no-channels { padding:14px; border:1px dashed #354761; border-radius:12px; color:var(--muted); font-size:13px; }
+    .notice { margin-top:20px; padding:14px 16px; border:1px solid #66542f; border-radius:14px; background:#241f16; color:#e6d7b3; font-size:13px; }
+    .notice strong { color:#ffdc87; }
+    footer { margin-top:22px; color:#8492a7; font-size:12px; text-align:center; }
+    @media (max-width:780px) { .layout { grid-template-columns:1fr; } .wrap { width:min(100% - 22px,680px); padding-top:18px; } header { margin-bottom:24px; } .tag { display:none; } .player { min-height:190px; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="brand"><span class="logo" aria-hidden="true">▶</span><span>Nonton TV</span></div>
+      <span class="tag">Aplikasi web • GitHub Pages</span>
+    </header>
+
+    <section class="intro">
+      <h1>Televisi pilihan Anda.</h1>
+      <p>Pilih saluran yang sudah ditambahkan, atau masukkan tautan pemutar resmi.</p>
+    </section>
+
+    <div class="layout">
+      <section class="card" aria-label="Pemutar TV">
+        <div class="player-head">
+          <div class="onair"><span id="statusDot" class="dot"></span><span id="currentName">Belum ada saluran diputar</span></div>
+          <span class="tag">LIVE PLAYER</span>
+        </div>
+        <div class="player" id="playerArea">
+          <div class="empty" id="emptyState">
+            <div class="empty-icon" aria-hidden="true">📺</div>
+            <strong>Pemutar siap digunakan</strong>
+            <p>Tambahkan tautan embed resmi di samping, lalu tekan “Simpan &amp; putar”.</p>
+          </div>
+          <iframe id="tvFrame" title="Pemutar siaran TV" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
+        </div>
+        <div class="player-actions">
+          <span id="playerMessage" class="muted" style="font-size:12px">Siaran akan diputar di area ini.</span>
+          <a id="openSource" href="#" target="_blank" rel="noopener noreferrer" hidden>Buka sumber resmi ↗</a>
+        </div>
+      </section>
+
+      <aside class="card side">
+        <h2>Tambah saluran</h2>
+        <form id="channelForm">
+          <label for="channelName">Nama saluran</label>
+          <input id="channelName" name="channelName" placeholder="Contoh: TV Nasional" maxlength="50" required>
+          <label for="channelUrl">URL embed resmi</label>
+          <input id="channelUrl" name="channelUrl" type="url" inputmode="url" placeholder="https://..." required>
+          <button class="primary" type="submit">Simpan &amp; putar</button>
+        </form>
+        <p class="hint">Gunakan tautan pemutar yang memang diizinkan untuk disematkan. Tautan halaman biasa mungkin tidak dapat diputar.</p>
+
+        <div class="section-title">
+          <h2>Daftar saluran</h2>
+          <span class="count" id="channelCount">0 saluran</span>
+        </div>
+        <div class="channels" id="channelList"></div>
+      </aside>
+    </div>
+
+    <div class="notice"><strong>Catatan:</strong> Saluran yang ditambahkan di halaman ini tersimpan hanya pada browser/perangkat Anda. Agar semua pengunjung melihat daftar saluran yang sama, edit bagian <code>DEFAULT_CHANNELS</code> di file <code>index.html</code> sesuai petunjuk README.</div>
+    <footer>Gunakan siaran dan tautan embed yang resmi serta memiliki izin. GitHub Pages hanya menayangkan halaman aplikasinya.</footer>
+  </main>
+
+  <script>
+    // Untuk menampilkan saluran yang sama kepada semua pengunjung, isi daftar ini
+    // dengan URL embed resmi. Contoh format: { name: "Nama TV", url: "https://..." }
+    const DEFAULT_CHANNELS = [];
+    const STORAGE_KEY = "nonton-tv-saluran-v1";
+
+    const form = document.getElementById("channelForm");
+    const nameInput = document.getElementById("channelName");
+    const urlInput = document.getElementById("channelUrl");
+    const channelList = document.getElementById("channelList");
+    const countLabel = document.getElementById("channelCount");
+    const frame = document.getElementById("tvFrame");
+    const emptyState = document.getElementById("emptyState");
+    const currentName = document.getElementById("currentName");
+    const statusDot = document.getElementById("statusDot");
+    const playerMessage = document.getElementById("playerMessage");
+    const openSource = document.getElementById("openSource");
+
+    function getSavedChannels() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(saved) ? saved.filter(item => item && typeof item.name === "string" && typeof item.url === "string") : [];
+      } catch { return []; }
+    }
+
+    function allChannels() {
+      return [...DEFAULT_CHANNELS.map(item => ({ ...item, builtIn: true })), ...getSavedChannels().map(item => ({ ...item, builtIn: false }))];
+    }
+
+    function playChannel(channel) {
+      frame.src = channel.url;
+      frame.hidden = false;
+      emptyState.hidden = true;
+      currentName.textContent = channel.name;
+      statusDot.classList.add("live");
+      playerMessage.textContent = "Jika pemutar tidak muncul, penyedia mungkin membatasi penyematan.";
+      openSource.href = channel.url;
+      openSource.hidden = false;
+    }
+
+    function renderChannels() {
+      const channels = allChannels();
+      countLabel.textContent = `${channels.length} saluran`;
+      channelList.replaceChildren();
+      if (!channels.length) {
+        const empty = document.createElement("div");
+        empty.className = "no-channels";
+        empty.textContent = "Belum ada saluran. Tambahkan URL embed resmi melalui formulir di atas.";
+        channelList.append(empty);
+        return;
+      }
+      channels.forEach((channel, index) => {
+        const row = document.createElement("div");
+        row.className = "channel";
+        const play = document.createElement("button");
+        play.type = "button";
+        play.className = "channel-play";
+        play.setAttribute("aria-label", `Putar ${channel.name}`);
+        const icon = document.createElement("span");
+        icon.className = "channel-icon";
+        icon.textContent = "▶";
+        const name = document.createElement("span");
+        name.className = "channel-name";
+        name.append(document.createTextNode(channel.name));
+        const type = document.createElement("span");
+        type.className = "channel-type";
+        type.textContent = channel.builtIn ? "Daftar aplikasi" : "Tersimpan di perangkat ini";
+        name.append(type);
+        play.append(icon, name);
+        play.addEventListener("click", () => playChannel(channel));
+        row.append(play);
+        if (!channel.builtIn) {
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.className = "remove";
+          remove.title = `Hapus ${channel.name}`;
+          remove.setAttribute("aria-label", `Hapus ${channel.name}`);
+          remove.textContent = "×";
+          remove.addEventListener("click", () => {
+            const saved = getSavedChannels();
+            saved.splice(index - DEFAULT_CHANNELS.length, 1);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+            if (currentName.textContent === channel.name) {
+              frame.src = "";
+              frame.hidden = true;
+              emptyState.hidden = false;
+              currentName.textContent = "Belum ada saluran diputar";
+              statusDot.classList.remove("live");
+              openSource.hidden = true;
+            }
+            renderChannels();
+          });
+          row.append(remove);
+        }
+        channelList.append(row);
+      });
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      const name = nameInput.value.trim();
+      let url;
+      try { url = new URL(urlInput.value.trim()); } catch { urlInput.setCustomValidity("Masukkan URL yang benar."); urlInput.reportValidity(); return; }
+      urlInput.setCustomValidity("");
+      if (url.protocol !== "https:") {
+        urlInput.setCustomValidity("Gunakan URL HTTPS yang aman.");
+        urlInput.reportValidity();
+        return;
+      }
+      if (!name) return;
+      const saved = getSavedChannels();
+      const channel = { name, url: url.href };
+      saved.push(channel);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      renderChannels();
+      playChannel(channel);
+      form.reset();
+    });
+
+    renderChannels();
+  </script>
+</body>
+</html>
